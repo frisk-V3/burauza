@@ -6,25 +6,21 @@
 </head>
 
 <body>
-<div class="container">
-    <h1>Frisk Browser</h1>
 
-    <div class="search-box">
-        <select id="engine">
-            <option value="google">Google</option>
-            <option value="bing">Bing</option>
-            <option value="yahoo">Yahoo Japan</option>
-            <option value="duck">DuckDuckGo</option>
-            <option value="wiki">Wikipedia</option>
-            <option value="github">GitHub</option>
-        </select>
+<!-- タブバー -->
+<div id="tabs"></div>
 
-        <input id="query" placeholder="検索..." />
-        <button onclick="search()">検索</button>
-    </div>
-
-    <div id="history"></div>
+<!-- URLバー -->
+<div class="nav">
+    <button onclick="back()">←</button>
+    <button onclick="forward()">→</button>
+    <input id="url" placeholder="URL or 検索">
+    <button onclick="go()">Go</button>
+    <button onclick="newTab()">＋</button>
 </div>
+
+<!-- Web表示 -->
+<iframe id="view"></iframe>
 
 <script src="script.js"></script>
 </body>
