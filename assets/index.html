@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+    <h1>Frisk Browser</h1>
+
+    <div class="search-box">
+        <select id="engine">
+            <option value="google">Google</option>
+            <option value="bing">Bing</option>
+            <option value="yahoo">Yahoo Japan</option>
+            <option value="duck">DuckDuckGo</option>
+            <option value="wiki">Wikipedia</option>
+            <option value="github">GitHub</option>
+        </select>
+
+        <input id="query" placeholder="検索..." />
+        <button onclick="search()">検索</button>
+    </div>
+
+    <div id="history"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
