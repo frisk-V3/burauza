@@ -1,5 +1,5 @@
 mod browser;
-mod window; 
+mod window;
 
 fn main() {
     browser::run();
