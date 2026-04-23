@@ -21,7 +21,11 @@ pub fn run() {
         .unwrap()
         .with_html(html)
         .unwrap()
-        .with_initialization_script(include_str!("../assets/script.js"))
+        .with_ipc_handler(|_window, msg| {
+            println!("JSから: {}", msg);
+
+            // TODO: タブ管理・履歴保存などここで処理
+        })
         .build()
         .unwrap();
 
