@@ -4,7 +4,6 @@ use tao::{
 };
 
 use wry::{WebView, WebViewBuilder};
-
 use serde_json::Value;
 
 pub fn create_window(event_loop: &EventLoop<()>) -> (Window, WebView) {
@@ -16,15 +15,12 @@ pub fn create_window(event_loop: &EventLoop<()>) -> (Window, WebView) {
     let html = include_str!("../assets/index.html");
 
     let webview = WebViewBuilder::new(&window)
-        .with_html(html)
-        .expect("Invalid HTML")
-        .with_ipc_handler(move |_window, msg| {
-            let v: Value = serde_json::from_str(&msg).unwrap();
+        .with_html(html) // ← expect付けない
+        .with_ipc_handler(move |_window, msg: String| { // ← 型を明示
+            let v: Value = serde_json::from_str(&msg).unwrap_or_default();
 
             match v["cmd"].as_str().unwrap_or("") {
                 "new_tab" => {
-                    // ⚠️ ここでは直接作れない（event_loopが無い）
-                    // → とりあえずログ確認
                     println!("New tab requested");
                 }
                 "navigate" => {
