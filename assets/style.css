@@ -1,0 +1,25 @@
+body {
+    background: #1e1e1e;
+    color: white;
+    font-family: sans-serif;
+}
+
+.container {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.search-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+input {
+    width: 300px;
+    padding: 10px;
+}
+
+select, button {
+    padding: 10px;
+}
