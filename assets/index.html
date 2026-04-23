@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-</head>
+<body style="background:#1e1e1e;color:white;text-align:center;margin-top:100px;">
 
-<body>
+<h1>New Tab</h1>
 
-<!-- タブバー -->
-<div id="tabs"></div>
+<input id="q" placeholder="検索..." />
+<button onclick="search()">検索</button>
 
-<!-- URLバー -->
-<div class="nav">
-    <button onclick="back()">←</button>
-    <button onclick="forward()">→</button>
-    <input id="url" placeholder="URL or 検索">
-    <button onclick="go()">Go</button>
-    <button onclick="newTab()">＋</button>
-</div>
+<button onclick="newTab()">＋ タブ</button>
 
-<!-- Web表示 -->
-<iframe id="view"></iframe>
+<script>
+function search() {
+    let q = document.getElementById("q").value;
+    location.href = "https://www.google.com/search?q=" + encodeURIComponent(q);
+}
 
-<script src="script.js"></script>
+function newTab() {
+    window.ipc.postMessage("new_tab");
+}
+</script>
+
 </body>
 </html>
