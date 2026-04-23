@@ -1,5 +1,5 @@
-mod app;
+mod browser;
 
 fn main() {
-    app::run();
+    browser::run();
 }
