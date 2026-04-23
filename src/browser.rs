@@ -9,19 +9,14 @@ use tao::{
 
 use wry::WebView;
 
-use crate::window::create_window;
-
-// カスタムイベント
-#[derive(Debug, Clone)]
-enum UserEvent {
-    NewTab,
-}
+use crate::window::{create_window, UserEvent};
 
 // IPCキュー
 type IpcQueue = Arc<Mutex<Vec<String>>>;
 
 pub fn run() {
-    let event_loop: EventLoop<UserEvent> = EventLoop::with_user_event();
+    // ✅ ここ修正
+    let event_loop: EventLoop<UserEvent> = EventLoop::new();
 
     let proxy: EventLoopProxy<UserEvent> = event_loop.create_proxy();
 
