@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 
 use tao::{
     event::{Event, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
+    event_loop::{ControlFlow, EventLoop, EventLoopProxy},
     window::WindowId,
 };
 
@@ -11,18 +11,26 @@ use wry::WebView;
 
 use crate::window::create_window;
 
-// IPCイベント共有キュー
+// カスタムイベント
+#[derive(Debug, Clone)]
+enum UserEvent {
+    NewTab,
+}
+
+// IPCキュー
 type IpcQueue = Arc<Mutex<Vec<String>>>;
 
 pub fn run() {
-    let event_loop = EventLoop::new();
+    let event_loop: EventLoop<UserEvent> = EventLoop::with_user_event();
+
+    let proxy: EventLoopProxy<UserEvent> = event_loop.create_proxy();
 
     let ipc_queue: IpcQueue = Arc::new(Mutex::new(Vec::new()));
 
     let mut views: HashMap<WindowId, (tao::window::Window, WebView)> = HashMap::new();
 
     // 初期タブ
-    let (window, webview) = create_window(&event_loop, ipc_queue.clone());
+    let (window, webview) = create_window(&event_loop, ipc_queue.clone(), proxy.clone());
     views.insert(window.id(), (window, webview));
 
     event_loop.run(move |event, _, control_flow| {
@@ -34,13 +42,17 @@ pub fn run() {
 
             while let Some(msg) = queue.pop() {
                 if msg == "new_tab" {
-                    let (w, v) = create_window(&event_loop, ipc_queue.clone());
-                    views.insert(w.id(), (w, v));
+                    proxy.send_event(UserEvent::NewTab).ok();
                 }
             }
         }
 
         match event {
+            Event::UserEvent(UserEvent::NewTab) => {
+                let (w, v) = create_window(&event_loop, ipc_queue.clone(), proxy.clone());
+                views.insert(w.id(), (w, v));
+            }
+
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
                 window_id,
@@ -52,6 +64,7 @@ pub fn run() {
                     *control_flow = ControlFlow::Exit;
                 }
             }
+
             _ => {}
         }
     });
