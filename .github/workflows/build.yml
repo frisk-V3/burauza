@@ -1,34 +1,63 @@
-name: Build Browser
+name: Build Frisk Browser (All OS)
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'   # ←ここ重要
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
 
-    - name: Upgrade pip
-      run: python -m pip install --upgrade pip
-
-    - name: Install dependencies
+    # 🐧 Linux用依存（Wry必須）
+    - name: Install Linux dependencies
+      if: matrix.os == 'ubuntu-latest'
       run: |
-        pip install PySide6 pyinstaller
+        sudo apt update
+        sudo apt install -y \
+          libwebkit2gtk-4.1-dev \
+          libgtk-3-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev
 
-    - name: Build EXE
+    # 🍎 macOSは特に追加不要（WebKit標準）
+
+    # 🪟 WindowsはそのままでOK
+
+    - name: Build
+      run: cargo build --release
+
+    - name: Rename binary (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-        pyinstaller --noconfirm --onefile --windowed main.py
+        mkdir output
+        copy target\release\frisk-browser.exe output\frisk-browser-windows.exe
 
-    - name: Upload Artifact
+    - name: Rename binary (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        mkdir output
+        cp target/release/frisk-browser output/frisk-browser-linux
+
+    - name: Rename binary (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        mkdir output
+        cp target/release/frisk-browser output/frisk-browser-macos
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: browser-exe
-        path: dist/main.exe
+        name: frisk-browser-${{ matrix.os }}
+        path: output/*
