@@ -1,22 +1,65 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#1e1e1e;color:white;text-align:center;margin-top:100px;">
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    background: #0f172a;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 100px;
+}
+input, select, button {
+    padding: 10px;
+    margin: 5px;
+}
+</style>
+</head>
 
-<h1>New Tab</h1>
+<body>
 
-<input id="q" placeholder="検索..." />
-<button onclick="search()">検索</button>
+<h1>Frisk Browser</h1>
 
-<button onclick="newTab()">＋ タブ</button>
+<select id="engine">
+    <option value="google">Google</option>
+    <option value="bing">Bing</option>
+    <option value="yahoo">Yahoo Japan</option>
+    <option value="duck">DuckDuckGo</option>
+    <option value="wiki">Wikipedia</option>
+    <option value="github">GitHub</option>
+</select>
+
+<br>
+
+<input id="q" placeholder="検索 or URL">
+<button onclick="go()">検索</button>
+<button onclick="newTab()">＋タブ</button>
 
 <script>
-function search() {
+function go() {
     let q = document.getElementById("q").value;
-    location.href = "https://www.google.com/search?q=" + encodeURIComponent(q);
+    let e = document.getElementById("engine").value;
+
+    let map = {
+        google: `https://www.google.com/search?q=${q}`,
+        bing: `https://www.bing.com/search?q=${q}`,
+        yahoo: `https://search.yahoo.co.jp/search?p=${q}`,
+        duck: `https://duckduckgo.com/?q=${q}`,
+        wiki: `https://ja.wikipedia.org/wiki/${q}`,
+        github: `https://github.com/search?q=${q}`
+    };
+
+    window.ipc.postMessage(JSON.stringify({
+        cmd: "navigate",
+        url: map[e]
+    }));
 }
 
 function newTab() {
-    window.ipc.postMessage("new_tab");
+    window.ipc.postMessage(JSON.stringify({
+        cmd: "new_tab"
+    }));
 }
 </script>
 
