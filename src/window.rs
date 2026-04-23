@@ -5,17 +5,15 @@ use tao::{
 
 use wry::{WebView, WebViewBuilder};
 
-// Window + WebView をセットで返す
 pub fn create_window(event_loop: &EventLoop<()>, url: &str) -> (Window, WebView) {
     let window = WindowBuilder::new()
         .with_title("Frisk Browser")
         .build(event_loop)
         .expect("Failed to create window");
 
-    let webview = WebViewBuilder::new(&window) // ← 参照！
-        .with_url(url)
-        .expect("Invalid URL")
-        .build()
+    let webview = WebViewBuilder::new(&window)
+        .with_url(url)   // ← ここはそのまま（Resultじゃない）
+        .build()         // ← ここだけResult
         .expect("Failed to build WebView");
 
     (window, webview)
