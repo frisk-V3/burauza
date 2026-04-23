@@ -5,40 +5,38 @@ use tao::{
 
 use wry::{WebView, WebViewBuilder};
 
+use serde_json::Value;
+
 pub fn create_window(event_loop: &EventLoop<()>) -> (Window, WebView) {
     let window = WindowBuilder::new()
         .with_title("Frisk Browser")
         .build(event_loop)
-        .unwrap();
+        .expect("Failed to create window");
 
     let html = include_str!("../assets/index.html");
 
     let webview = WebViewBuilder::new(&window)
         .with_html(html)
-        .unwrap()
-        .with_ipc_handler(|window, msg| {
-            let v: serde_json::Value = serde_json::from_str(&msg).unwrap();
+        .expect("Invalid HTML")
+        .with_ipc_handler(move |_window, msg| {
+            let v: Value = serde_json::from_str(&msg).unwrap();
 
-            match v["cmd"].as_str().unwrap() {
+            match v["cmd"].as_str().unwrap_or("") {
                 "new_tab" => {
-                    // 新しいウィンドウ生成（タブ）
-                    let _ = WindowBuilder::new()
-                        .with_title("New Tab")
-                        .build(window.event_loop())
-                        .unwrap();
+                    // ⚠️ ここでは直接作れない（event_loopが無い）
+                    // → とりあえずログ確認
+                    println!("New tab requested");
                 }
-
                 "navigate" => {
                     if let Some(url) = v["url"].as_str() {
-                        window.set_title(url); // 仮
+                        println!("Navigate to: {}", url);
                     }
                 }
-
                 _ => {}
             }
         })
         .build()
-        .unwrap();
+        .expect("Failed to build WebView");
 
     (window, webview)
 }
