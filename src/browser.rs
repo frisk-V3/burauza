@@ -13,10 +13,10 @@ use crate::window::create_window;
 pub fn run() {
     let event_loop = EventLoop::new();
 
-    // WindowIdで管理（これが正解）
     let mut views: HashMap<WindowId, (tao::window::Window, WebView)> = HashMap::new();
 
-    let (window, webview) = create_window(&event_loop, "https://www.google.com");
+    // 初期タブ（ホーム）
+    let (window, webview) = create_window(&event_loop);
     let id = window.id();
     views.insert(id, (window, webview));
 
