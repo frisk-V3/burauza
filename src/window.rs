@@ -15,9 +15,12 @@ pub fn create_window(event_loop: &EventLoop<()>) -> (Window, WebView) {
     let html = include_str!("../assets/index.html");
 
     let webview = WebViewBuilder::new(&window)
-        .with_html(html) // ← expect付けない
-        .with_ipc_handler(move |_window, msg: String| { // ← 型を明示
-            let v: Value = serde_json::from_str(&msg).unwrap_or_default();
+        .with_html(html)
+        .with_ipc_handler(move |msg| {
+            // msgはStringとして来る
+            let msg_str = msg;
+
+            let v: Value = serde_json::from_str(&msg_str).unwrap_or_default();
 
             match v["cmd"].as_str().unwrap_or("") {
                 "new_tab" => {
