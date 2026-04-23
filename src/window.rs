@@ -1,32 +1,22 @@
-use wry::{
-    application::{
-        event_loop::EventLoop,
-        window::{WindowBuilder, Window},
-    },
-    webview::WebViewBuilder,
+use tao::{
+    event_loop::EventLoop,
+    window::{Window, WindowBuilder},
 };
+
+use wry::webview::WebViewBuilder;
 
 pub fn create_window(event_loop: &EventLoop<()>, url: &str) -> Window {
     let window = WindowBuilder::new()
         .with_title("Frisk Browser")
         .build(event_loop)
-        .unwrap();
+        .expect("Failed to create window");
 
     WebViewBuilder::new(window.clone())
-        .unwrap()
+        .expect("WebView init failed")
         .with_url(url)
-        .unwrap()
-        .with_ipc_handler(|window, msg| {
-            if msg == "new_tab" {
-                // 新しいウィンドウを開く（擬似タブ）
-                let _ = WindowBuilder::new()
-                    .with_title("New Tab")
-                    .build(window.event_loop())
-                    .unwrap();
-            }
-        })
+        .expect("Invalid URL")
         .build()
-        .unwrap();
+        .expect("Failed to build WebView");
 
     window
 }
